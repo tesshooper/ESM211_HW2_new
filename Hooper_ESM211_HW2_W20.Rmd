@@ -1,0 +1,247 @@
+---
+title: "Hooper_ESM211_HW2_W20"
+author: "Tess Hooper"
+date: "2/3/2020"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+### Load packages 
+
+library(tidyverse)
+library(Deriv)
+```
+
+<br.
+
+#### **1. Graph of *dN/dt* vs. *N***
+
+Growth model equation: 
+$f(N) = \frac{dN}{dt}= rN(1-\frac{N}{K}) - P(\frac{aN}{1 + ahN})$
+
+<br>
+
+Parameters: r = 0.05 K = 2000, P = 4, a = 0.01, h = 0.2
+```{r Question 1}
+
+### Set up parameters:
+
+r = 0.05 # intrinsic growth
+K = 2000 # carrying capacity
+P = 4 # number of hunters
+a = 0.05 # per prey attack rate
+h = 0.2 # harvest time 
+
+f <- function(N) r*N*(1-N/K) - P*((a*N)/(1+a*h*N)) # Here is where you define the function
+
+ggplot(data.frame(N = 0:2025), aes(x = N)) +
+  stat_function(fun = "f", color = "purple") +
+  geom_hline(yintercept = 0) +
+  ylab("dN/dt") +
+  theme_classic()
+
+```
+
+#### **2. Equilibria**
+Based on this graph, there are three equilibria points. One at *N* = 0 (stable), *N* = ~ 400 (unstable), and *N* = 1500 (stable). 
+
+<br>
+
+#### **3. Equilibria at *N* = 0**
+**a. Is there an equilbria at *N* = 0 for all plausible parameters?**  
+Yes. When *N* = 0, *dN/dt* will always be zero because of the given equation. There will always be a 0 in the first part of the equation, and then the second half of the equation will be divided by a zero  
+
+**b. For what values of hunter number (P), espressed in terms of the other parameters of the model, is the zero equilibrium stable?** 
+
+```{r derivative}
+
+deriveFn <- Deriv(f)
+
+deriveFn
+
+Simplify(deriveFn)
+  
+# .e1 <- 1 + a * h * N , N * (a^2 * h * P/.e1^2 - r/K) + r * (1 - N/K) - a * P/.e1
+ 
+ 
+```
+
+The original equation needs to be differentiated in order to find values of hunter number (P) that would give us a stable zero equilibrium.  
+$\frac{df(N))}{dN} = rN(1-\frac{2N}{K}) - P(\frac{a}{(1 + ahN)^2})$
+
+When *N* = 0, the equation can be rearranged to become $\frac{df(N)}{dN} = r - Pa$  
+
+When *N*=0, dN/dt is also zero, and gives us a stable equilibrium point for all plausible parameter values.
+
+$0 = r-Pa$  
+$P = (\frac{r}{a})$
+
+
+**c. If your goal is to eliminate the invasive species, what does this tell you about how many hunters you need? **  
+If the species growth rate increases, the more hunters are needed. The number of hunters is dependent on the species growth rate and the per-prey attack rate. ($P = (\frac{r}{a})$). In order to have a stable zero equilibrium, and to eliminate the invasive species, P must be greater than $(\frac{r}{a})$. 
+
+
+<br>
+
+
+#### 4. Non-zero equilibria equation  
+$0 = rN(1-\frac{N}{K}) - P(\frac{aN}{1-ahN})$
+
+<br>
+
+
+#### 5. Intrinsic Growth Rate and Hunting Rates  
+Intrinsic population growth: $(rN(1-\frac{N}{K}))$  
+Hunting rate: $P(\frac{aN}{1+ahN})$  
+  
+**a. Using the same parameters from before, graph both the intrinsic growth rate and hunting rate functions of N on the same graph**    
+
+```{r 5a}
+
+r <- 0.05
+K <- 2000
+P <- 4
+a <- 0.05
+h <- 0.2
+
+# Intrinsic Population Growth Rate Function
+
+ipgr <- function(N) (r*N) * (1 - N/K)
+
+# Hunting Rate Function
+
+hr <- function(N) P* ((a* N)/(1 + a*h*N))
+
+rates_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
+  stat_function(fun = ipgr, color = "purple") +
+  stat_function(fun = hr, color = "green") +
+  geom_hline(yintercept = 0) +
+  ylab("dN/dt") +
+  theme_minimal()
+
+rates_plot
+
+
+```
+
+
+**b. What will happen to the population when the hunting rate is greater than the growth rate? When it is less? When they are equal?**  
+When the hunting rate (P) is greater than the growth rate, the invasive species will decrease (and be eliminated). If P is less than the growth rate, then the invasive species population will grow. If they are equal then the population will reamin stable.  
+
+
+**c. How do the patterns you see on this graph relate to the ones in Problem 1?**  
+The equilibrium values on this graph are the same as in our Problem 1 graph. The equilibrium points for N will be where the hunting rate and growth rate meet: 0, ~400, 1500.  
+
+
+
+<br>
+
+
+#### 6. Equilibria with different *P* values  
+Make two similar graphs, keeping all parameters the same but setting P = 1 in one graph and P = 6 in the other. How many equilibria are there in each case, and which are stable? 
+
+```{r 6}
+
+### Graph when P = 1
+
+r <- 0.05
+K <- 2000
+P <- 1
+a <- 0.05
+h <- 0.2
+
+# Intrinsic Population Growth Rate Function
+
+ipgr_P1 <- function(N) (r*N) * (1 - N/K)
+
+# Hunting Rate Function
+
+hr_P1 <- function(N) P* ((a* N)/(1 + a*h*N))
+
+P1_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
+  stat_function(fun = ipgr_P1, color = "purple") +
+  stat_function(fun = hr_P1, color = "green") +
+  geom_hline(yintercept = 0) +
+  ylab("dN/dt") +
+  theme_minimal()
+
+
+P1_plot
+
+
+```
+<br>
+When P = 1, there are two equilibrium points: N = 0 (unstable), and N = ~1900 (stable).  
+
+```{r 6b}
+
+
+### Graph when P = 6
+
+r <- 0.05
+K <- 2000
+P <- 6
+a <- 0.05
+h <- 0.2
+
+# Intrinsic Population Growth Rate Function
+
+ipgr_P6 <- function(N) (r*N) * (1 - N/K)
+
+# Hunting Rate Function
+
+hr_P6 <- function(N) P* ((a* N)/(1 + a*h*N))
+
+P6_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
+  stat_function(fun = ipgr_P6, color = "purple") +
+  stat_function(fun = hr_P6, color = "green") +
+  geom_hline(yintercept = 0) +
+  ylab("dN/dt") +
+  theme_minimal()
+
+
+P6_plot
+
+```
+<br>
+When P = 6 there is only one equilibrium point at N = 0 and it is stable. In this case P exceeds the intrinsic growth rate after zero. 
+
+
+<br>
+
+#### 7. Bistability
+
+**a. What is the domain of attraction of the zero equilibrium (approximately - you can estimate this from the graph)? What is the domain of attraction of the largest equilibrium?**  
+Looking at the initial graph of P = 4, the domain of attraction for the zero equilibrium is any value of N between 0 and ~400, where the hunting rate first crosses the growth rate. For the largest equilibrium at N = 1500, the domain of attraction is between N = ~400 and N = 2000.  
+
+**b. If you noticed the arrival of the species soon after it arrives, and initiated control activities when it had reached N = 100 individuals, would you be able to extirpate it with 4 hunters?**  
+When N = 100, the hunting rate exceeds the growth rate, so we will be able to extirpate the species. Howver, at P = 1, we woud not be able to extirpate the species because the hunting rate is below the growth rate.  
+
+
+**c. What about if the population was already at carrying capacity when you initiated control activites?**  
+When P = 1, we would be able to decrease the invasive species population to 1500 where it would then reach equilibrium. If we wanted to fully extirpate the species we would need to increase hunting rate (P). When P = 6, we would be able to extirpate because the hunting rate continues to exceed growth rate.   
+
+
+<br>
+
+
+#### 8. Changing number of hunters 
+***How do the equilibrium values depend on the number of hunters?***  
+  
+**a. Plot each of the three equilibria as a function of *P*, for values of *P* ranging between 0 and 7.**  
+
+**b. Draw a vertical dotted line where the zero equilibrium changes from locally stable to locally unstable.**  
+
+**c. What else can you learn from this graph? What confuses or concerns you about this graph?**  
+
+
+<br>
+
+
