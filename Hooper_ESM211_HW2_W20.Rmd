@@ -120,8 +120,8 @@ ipgr <- function(N) (r*N) * (1 - N/K)
 hr <- function(N) P* ((a* N)/(1 + a*h*N))
 
 rates_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
-  stat_function(fun = ipgr, color = "purple") +
-  stat_function(fun = hr, color = "green") +
+  stat_function(fun = ipgr, aes(color = "Intrinsic Growth Rate")) +
+  stat_function(fun = hr, aes(color = "Hunting Rate")) +
   geom_hline(yintercept = 0) +
   ylab("dN/dt") +
   theme_minimal()
@@ -166,8 +166,8 @@ ipgr_P1 <- function(N) (r*N) * (1 - N/K)
 hr_P1 <- function(N) P* ((a* N)/(1 + a*h*N))
 
 P1_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
-  stat_function(fun = ipgr_P1, color = "purple") +
-  stat_function(fun = hr_P1, color = "green") +
+  stat_function(fun = ipgr_P1, aes(color = "Intrinsic Growth Rate")) +
+  stat_function(fun = hr_P1, aes(color = "Hunting Rate")) +
   geom_hline(yintercept = 0) +
   ylab("dN/dt") +
   theme_minimal()
@@ -200,8 +200,8 @@ ipgr_P6 <- function(N) (r*N) * (1 - N/K)
 hr_P6 <- function(N) P* ((a* N)/(1 + a*h*N))
 
 P6_plot <- ggplot(data.frame(N = 0:2025), aes(x=N)) +
-  stat_function(fun = ipgr_P6, color = "purple") +
-  stat_function(fun = hr_P6, color = "green") +
+  stat_function(fun = ipgr_P6, aes(color = "Intrinsic Growth Rate")) +
+  stat_function(fun = hr_P6, aes(color = "Huntng Rate")) +
   geom_hline(yintercept = 0) +
   ylab("dN/dt") +
   theme_minimal()
@@ -219,7 +219,7 @@ When P = 6 there is only one equilibrium point at N = 0 and it is stable. In thi
 #### 7. Bistability
 
 **a. What is the domain of attraction of the zero equilibrium (approximately - you can estimate this from the graph)? What is the domain of attraction of the largest equilibrium?**  
-Looking at the initial graph of P = 4, the domain of attraction for the zero equilibrium is any value of N between 0 and ~400, where the hunting rate first crosses the growth rate. For the largest equilibrium at N = 1500, the domain of attraction is between N = ~400 and N = 2000.  
+Looking at the initial graph of P = 4, the domain of attraction for the zero equilibrium is any value of N between 0 and ~400, where the hunting rate first crosses the growth rate. For the largest equilibrium at N = 1500, the domain of attraction is between N = ~400 and N = 1500.  
 
 **b. If you noticed the arrival of the species soon after it arrives, and initiated control activities when it had reached N = 100 individuals, would you be able to extirpate it with 4 hunters?**  
 When N = 100, the hunting rate exceeds the growth rate, so we will be able to extirpate the species. Howver, at P = 1, we woud not be able to extirpate the species because the hunting rate is below the growth rate.  
@@ -236,10 +236,48 @@ When P = 1, we would be able to decrease the invasive species population to 1500
 ***How do the equilibrium values depend on the number of hunters?***  
   
 **a. Plot each of the three equilibria as a function of *P*, for values of *P* ranging between 0 and 7.**  
+```{r 8a, warning = FALSE}
 
-**b. Draw a vertical dotted line where the zero equilibrium changes from locally stable to locally unstable.**  
+## Parameters 
+r <- 0.05
+K <- 2000
+a <- 0.05
+h <- 0.2
+d <- 1/(a*h)
+
+# Function for N = 400 equilibrium
+
+equil_400 <- function(P) (1/2) * ((K - d) - sqrt((K-d)^2 + ((4*K*d)/(r)) *(r - a * P)))
+
+
+# Function for N = 1500 equilibrium
+
+equil_1500 <- function(P) (1/2) * ((K - d) + sqrt((K-d)^2 + ((4*K*d)/(r)) *(r - a * P)))
+
+
+### Plot equilibria 
+
+equil_plot <-ggplot(data.frame(P = 0:7) , aes(x = P)) + 
+  stat_function(fun = equil_400, aes(color = "N1* Equilibrium")) + stat_function(fun = equil_1500, aes(color = "N2* Equilibrium")) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 1, linetype = "dotted", color = "black", size = 1) +
+  labs( x = "Number of Hunters (P)", y = "Equilibrium") +
+  theme_minimal()
+
+equil_plot
+
+```
+
+
+
+**b. Draw a vertical dotted line where the zero equilibrium changes from locally stable to locally unstable. What else happens at this value of P?**  
+When P = 1, the equilibrium becomes unstable. This indicates that there are not enough hunters to control or extirpate the population when P = 1 (or is less than 1)
+
+
 
 **c. What else can you learn from this graph? What confuses or concerns you about this graph?**  
+
+What is happening at P = 5.5? Is there simply no equilibrium values? 
 
 
 <br>
